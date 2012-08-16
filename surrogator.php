@@ -1,6 +1,65 @@
+#!/usr/bin/env php
 <?php
 namespace surrogator;
-require __DIR__ . '/data/surrogator.config.php';
+$cfgFile = __DIR__ . '/data/surrogator.config.php';
+if (!file_exists($cfgFile)) {
+    $cfgFile = '/etc/surrogator.config.php';
+    if (!file_exists($cfgFile)) {
+        logErr(
+            "Configuration file does not exist.\n"
+            . "Copy data/surrogator.config.php.dist to data/surrogator.config.php"
+        );
+        exit(2);
+    }
+}
+require $cfgFile;
+
+array_shift($argv);
+$files = array();
+foreach ($argv as $arg) {
+    if ($arg == '-v' || $arg == '--verbose') {
+        ++$logLevel;
+    } else if ($arg == '-vv') {
+        $logLevel += 2;
+    } else if ($arg == '-q' || $arg == '--quiet') {
+        $logLevel = 0;
+    } else if ($arg == '-f' || $arg == '--force') {
+        $forceUpdate = true;
+    } else if ($arg == '-h' || $arg == '--help') {
+        showHelp();
+        exit(4);
+    } else if ($arg == '--version') {
+        echo "surrogator 0.0.1\n";
+        exit();
+    } else if (file_exists($arg)) {
+        $files[] = $arg;
+    } else {
+        logErr('Unknown argument: ' . $arg);
+        exit(3);
+    }
+}
+
+function showHelp()
+{
+    echo <<<HLP
+Usage: php surrogator.php [options] [filename(s)]
+
+surrogator - a simple libravatar server
+ Put files in raw/ dir and run surrogator.php to generate different sizes
+
+Options:
+
+ -h, --help     Show help
+ -v, --verbose  Be verbose (more log messages, also -vv)
+ -q, --quiet    Be quiet (no log messages)
+ -f, --force    Force update of all files
+     --version  Show program version
+
+filenames       One or several files whose small images shall get generated.
+                If none given, all will be checked
+
+HLP;
+}
 
 if (!isset($rawDir)) {
     logErr('$rawDir not set');
@@ -18,16 +77,20 @@ if (!isset($maxSize)) {
     logErr('$maxSize not set');
     exit(1);
 }
+if (!isset($logLevel)) {
+    logErr('$logLevel not set');
+    exit(1);
+}
 
 
 if (!is_dir($varDir . '/square')) {
-    log('Creating square dir: ' . $varDir . '/square');
+    log('creating square dir: ' . $varDir . '/square');
     mkdir($varDir . '/square', 0755, true);
 }
 log('sizes: ' . implode(', ', $sizes), 2);
 foreach ($sizes as $size) {
     if (!is_dir($varDir . '/' . $size)) {
-        log('Creating size dir: ' . $varDir . '/' . $size);
+        log('creating size dir: ' . $varDir . '/' . $size);
         mkdir($varDir . '/' . $size, 0755);
     }
 }
@@ -59,7 +122,7 @@ foreach ($dir as $fileInfo) {
         list($md5, $sha256) = getHashes($fileName);
     }
 
-    log(' Creating sizes for ' . $fileName, 2);
+    log(' creating sizes for ' . $fileName, 2);
     log(' md5:    ' . $md5, 3);
     log(' sha256: ' . $sha256, 3);
     $imgSquare = imagecreatefrompng($squarePath);
@@ -86,7 +149,6 @@ foreach ($dir as $fileInfo) {
     }
     imagedestroy($imgSquare);
 }
-
 
 function getHashes($fileName)
 {
@@ -151,10 +213,13 @@ function createSquare($origPath, $ext, $targetPath, $maxSize)
 
 function image_uptodate($sourcePath, $targetPath)
 {
+    global $forceUpdate;
+    if ($forceUpdate) {
+        return false;
+    }
     if (!file_exists($targetPath)) {
         return false;
     }
-
     if (filemtime($sourcePath) > filemtime($targetPath)) {
         //source newer
         return false;
