@@ -24,7 +24,7 @@ if (!is_dir($varDir . '/square')) {
     log('Creating square dir: ' . $varDir . '/square');
     mkdir($varDir . '/square', 0755, true);
 }
-log('sizes: ' . implode(', ', $sizes));
+log('sizes: ' . implode(', ', $sizes), 2);
 foreach ($sizes as $size) {
     if (!is_dir($varDir . '/' . $size)) {
         log('Creating size dir: ' . $varDir . '/' . $size);
@@ -43,9 +43,9 @@ foreach ($dir as $fileInfo) {
     $squarePath = $varDir . '/square/'
         . substr($fileName, 0, -strlen($ext)) . 'png';
 
-    log('processing ' . $fileName);
+    log('processing ' . $fileName, 1);
     if (image_uptodate($origPath, $squarePath)) {
-        log(' image up to date');
+        log(' image up to date', 2);
         continue;
     }
 
@@ -59,9 +59,9 @@ foreach ($dir as $fileInfo) {
         list($md5, $sha256) = getHashes($fileName);
     }
 
-    log(' Creating sizes for ' . $fileName);
-    log(' md5:    ' . $md5);
-    log(' sha256: ' . $sha256);
+    log(' Creating sizes for ' . $fileName, 2);
+    log(' md5:    ' . $md5, 3);
+    log(' sha256: ' . $sha256, 3);
     $imgSquare = imagecreatefrompng($squarePath);
     foreach ($sizes as $size) {
         $sizePathMd5    = $varDir . '/' . $size . '/' . $md5 . '.png';
@@ -163,9 +163,12 @@ function image_uptodate($sourcePath, $targetPath)
     return true;
 }
 
-function log($msg)
+function log($msg, $level = 1)
 {
-    echo $msg . "\n";
+    global $logLevel;
+    if ($level <= $logLevel) {
+        echo $msg . "\n";
+    }
 }
 
 function logErr($msg)
