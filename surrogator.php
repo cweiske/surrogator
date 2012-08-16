@@ -85,7 +85,10 @@ if (!isset($logLevel)) {
 
 if (!is_dir($varDir . '/square')) {
     log('creating square dir: ' . $varDir . '/square');
-    mkdir($varDir . '/square', 0755, true);
+    if (!mkdir($varDir . '/square', 0755, true)) {
+        logErr('cannot create square dir');
+        exit(5);
+    }
 }
 log('sizes: ' . implode(', ', $sizes), 2);
 foreach ($sizes as $size) {
