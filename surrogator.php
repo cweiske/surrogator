@@ -4,15 +4,19 @@ require __DIR__ . '/data/surrogator.config.php';
 
 if (!isset($rawDir)) {
     logErr('$rawDir not set');
+    exit(1);
 }
 if (!isset($varDir)) {
     logErr('$varDir not set');
+    exit(1);
 }
 if (!isset($sizes)) {
     logErr('$sizes not set');
+    exit(1);
 }
 if (!isset($maxSize)) {
     logErr('$maxSize not set');
+    exit(1);
 }
 
 
