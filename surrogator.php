@@ -95,11 +95,18 @@ foreach ($sizes as $size) {
     }
 }
 
-$dir = new \RegexIterator(
-    new \DirectoryIterator($rawDir),
-    '#^.+\.(png|jpg)$#'
-);
-foreach ($dir as $fileInfo) {
+if (count($files)) {
+    $fileInfos = array();
+    foreach ($files as $file) {
+        $fileInfos[] = new \SplFileInfo($file);
+    }
+} else {
+    $fileInfos = new \RegexIterator(
+        new \DirectoryIterator($rawDir),
+        '#^.+\.(png|jpg)$#'
+    );
+}
+foreach ($fileInfos as $fileInfo) {
     $origPath   = $fileInfo->getPathname();
     $fileName   = $fileInfo->getFilename();
     $ext        = strtolower(substr($fileName, strrpos($fileName, '.') + 1));
@@ -127,6 +134,7 @@ foreach ($dir as $fileInfo) {
     log(' sha256: ' . $sha256, 3);
     $imgSquare = imagecreatefrompng($squarePath);
     foreach ($sizes as $size) {
+        log(' size ' . $size, 3);
         $sizePathMd5    = $varDir . '/' . $size . '/' . $md5 . '.png';
         $sizePathSha256 = $varDir . '/' . $size . '/' . $sha256 . '.png';
 
