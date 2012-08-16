@@ -1,5 +1,18 @@
 #!/usr/bin/env php
 <?php
+/**
+ * Tool to create avatar images in different sizes.
+ *
+ * Part of Surrogator - a simple libravatar avatar image server
+ *
+ * PHP version 5
+ *
+ * @category Tools
+ * @package  Surrogator
+ * @author   Christian Weiske <cweiske@cweiske.de>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3 or later
+ * @link     http://git.cweiske.de/?p=surrogator.git
+ */
 namespace surrogator;
 $cfgFile = __DIR__ . '/data/surrogator.config.php';
 if (!file_exists($cfgFile)) {
@@ -39,6 +52,11 @@ foreach ($argv as $arg) {
     }
 }
 
+/**
+ * Echos the --help screen.
+ *
+ * @return void
+ */
 function showHelp()
 {
     echo <<<HLP
@@ -117,7 +135,7 @@ foreach ($fileInfos as $fileInfo) {
         . substr($fileName, 0, -strlen($ext)) . 'png';
 
     log('processing ' . $fileName, 1);
-    if (image_uptodate($origPath, $squarePath)) {
+    if (imageUptodate($origPath, $squarePath)) {
         log(' image up to date', 2);
         continue;
     }
@@ -148,7 +166,7 @@ foreach ($fileInfos as $fileInfo) {
             imagecolorallocatealpha($imgSize, 0, 0, 0, 127)
         );
         imagecopyresampled(
-            $imgSize, $imgSquare, 
+            $imgSize, $imgSquare,
             0, 0, 0, 0,
             $size, $size, $maxSize, $maxSize
         );
@@ -156,11 +174,18 @@ foreach ($fileInfos as $fileInfo) {
         imagepng($imgSize, $sizePathMd5);
         imagepng($imgSize, $sizePathSha256);
         imagedestroy($imgSize);
-        
+
     }
     imagedestroy($imgSquare);
 }
 
+/**
+ * Create and return md5 and sha256 hashes from a filename.
+ *
+ * @param string $fileName filename without path, e.g. "foo@example.org.png"
+ *
+ * @return array Array with 2 values: md5 and sha256 hash
+ */
 function getHashes($fileName)
 {
     $fileNameNoExt = substr($fileName, 0, -strlen(strrpos($fileName, '.')) - 2);
@@ -171,7 +196,17 @@ function getHashes($fileName)
     );
 }
 
-
+/**
+ * Creates the square image from the given image in maximum size.
+ * Scales the image up or down and makes the non-covered parts transparent.
+ *
+ * @param string  $origPath   Full path to original image
+ * @param string  $ext        File extension ("jpg" or "png")
+ * @param string  $targetPath Full path to target image file
+ * @param integer $maxSize    Maxium image size the server supports
+ *
+ * @return boolean True if all went well, false if there was an error
+ */
 function createSquare($origPath, $ext, $targetPath, $maxSize)
 {
     if ($ext == 'png') {
@@ -207,7 +242,7 @@ function createSquare($origPath, $ext, $targetPath, $maxSize)
     $nHeight = (int)($oHeight * $flScale);
 
     imagecopyresampled(
-        $imgSquare, $imgOrig, 
+        $imgSquare, $imgOrig,
         ($maxSize - $nWidth) / 2, ($maxSize - $nHeight) / 2,
         0, 0,
         $nWidth, $nHeight,
@@ -222,7 +257,15 @@ function createSquare($origPath, $ext, $targetPath, $maxSize)
     return true;
 }
 
-function image_uptodate($sourcePath, $targetPath)
+/**
+ * Check if the target file is newer than the source file.
+ *
+ * @param string $sourcePath Full source file path
+ * @param string $targetPath Full target file path
+ *
+ * @return boolean True if target file is newer than the source file
+ */
+function imageUptodate($sourcePath, $targetPath)
 {
     global $forceUpdate;
     if ($forceUpdate) {
@@ -239,6 +282,14 @@ function image_uptodate($sourcePath, $targetPath)
     return true;
 }
 
+/**
+ * Write a log message to stdout
+ *
+ * @param string  $msg   Message to write
+ * @param integer $level Log level - 1 is important, 3 is unimportant
+ *
+ * @return void
+ */
 function log($msg, $level = 1)
 {
     global $logLevel;
@@ -247,6 +298,13 @@ function log($msg, $level = 1)
     }
 }
 
+/**
+ * Write an error message to stderr
+ *
+ * @param string $msg Message to write
+ *
+ * @return void
+ */
 function logErr($msg)
 {
     file_put_contents('php://stderr', $msg . "\n");

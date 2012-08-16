@@ -1,6 +1,18 @@
 <?php
+/**
+ * Script that handles avatar image requests.
+ *
+ * Part of Surrogator - a simple libravatar avatar image server.
+ *
+ * PHP version 5
+ *
+ * @category Tools
+ * @package  Surrogator
+ * @author   Christian Weiske <cweiske@cweiske.de>
+ * @license  http://www.gnu.org/licenses/agpl.html AGPLv3 or later
+ * @link     http://git.cweiske.de/?p=surrogator.git
+ */
 namespace surrogator;
-
 $cfgFile = __DIR__ . '/../data/surrogator.config.php';
 if (!file_exists($cfgFile)) {
     $cfgFile = '/etc/surrogator.config.php';
@@ -15,6 +27,14 @@ if (!file_exists($cfgFile)) {
 }
 require $cfgFile;
 
+/**
+ * Send an error message out.
+ *
+ * @param integer $statusCode HTTP status code
+ * @param string  $msg        Error message
+ *
+ * @return void
+ */
 function err($statusCode, $msg)
 {
     header('HTTP/1.0 ' . $statusCode . ' ' . $msg);
