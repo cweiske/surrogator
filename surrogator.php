@@ -1,18 +1,36 @@
 <?php
+namespace surrogator;
 require __DIR__ . '/data/surrogator.config.php';
 
+if (!isset($rawDir)) {
+    logErr('$rawDir not set');
+}
+if (!isset($varDir)) {
+    logErr('$varDir not set');
+}
+if (!isset($sizes)) {
+    logErr('$sizes not set');
+}
+if (!isset($maxSize)) {
+    logErr('$maxSize not set');
+}
+
+
 if (!is_dir($varDir . '/square')) {
+    log('Creating square dir: ' . $varDir . '/square');
     mkdir($varDir . '/square', 0755, true);
 }
+log('sizes: ' . implode(', ', $sizes));
 foreach ($sizes as $size) {
     if (!is_dir($varDir . '/' . $size)) {
+        log('Creating size dir: ' . $varDir . '/' . $size);
         mkdir($varDir . '/' . $size, 0755);
     }
 }
 
-$dir = new RegexIterator(
-    new DirectoryIterator($rawDir),
-    '#^.+@.+\.(png|jpg)$#'
+$dir = new \RegexIterator(
+    new \DirectoryIterator($rawDir),
+    '#^.+\.(png|jpg)$#'
 );
 foreach ($dir as $fileInfo) {
     $origPath   = $fileInfo->getPathname();
@@ -21,7 +39,9 @@ foreach ($dir as $fileInfo) {
     $squarePath = $varDir . '/square/'
         . substr($fileName, 0, -strlen($ext)) . 'png';
 
+    log('processing ' . $fileName);
     if (image_uptodate($origPath, $squarePath)) {
+        log(' image up to date');
         continue;
     }
 
@@ -29,8 +49,15 @@ foreach ($dir as $fileInfo) {
         continue;
     }
 
-    list($md5, $sha256) = getHashes($fileName);
+    if ($fileName == 'default.png') {
+        $md5 = $sha256 = 'default';
+    } else {
+        list($md5, $sha256) = getHashes($fileName);
+    }
 
+    log(' Creating sizes for ' . $fileName);
+    log(' md5:    ' . $md5);
+    log(' sha256: ' . $sha256);
     $imgSquare = imagecreatefrompng($squarePath);
     foreach ($sizes as $size) {
         $sizePathMd5    = $varDir . '/' . $size . '/' . $md5 . '.png';
@@ -80,10 +107,7 @@ function createSquare($origPath, $ext, $targetPath, $maxSize)
     }
 
     if ($imgOrig === false) {
-        file_put_contents(
-            'php://stderr',
-            'Error loading image file: ' . $origPath
-        );
+        logErr('Error loading image file: ' . $origPath);
         return false;
     }
 
@@ -133,6 +157,16 @@ function image_uptodate($sourcePath, $targetPath)
     }
 
     return true;
+}
+
+function log($msg)
+{
+    echo $msg . "\n";
+}
+
+function logErr($msg)
+{
+    file_put_contents('php://stderr', $msg . "\n");
 }
 
 ?>
