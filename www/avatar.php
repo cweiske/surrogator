@@ -19,8 +19,8 @@ if (!file_exists($cfgFile)) {
     if (!file_exists($cfgFile)) {
         err(
             500,
-            "Configuration file does not exist.\n"
-            . "Copy data/surrogator.config.php.dist to data/surrogator.config.php"
+            "Configuration file does not exist.",
+            "Copy data/surrogator.config.php.dist to data/surrogator.config.php"
         );
         exit(2);
     }
@@ -35,11 +35,11 @@ require $cfgFile;
  *
  * @return void
  */
-function err($statusCode, $msg)
+function err($statusCode, $msg, $more = '')
 {
     header('HTTP/1.0 ' . $statusCode . ' ' . $msg);
     header('Content-Type: text/plain');
-    echo $msg . "\n";
+    echo $msg . "\n" . $more;
     exit(1);
 }
 
