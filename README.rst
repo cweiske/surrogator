@@ -16,7 +16,22 @@ Setup
 2. Adjust the config file to your needs
 3. Create a default image and put it into the raw folder, name it ``default.png``
 4. Setup your web server and set the document root to the ``www/`` directory.
-   Make sure you allow ``.htaccess`` file and have ``mod_rewrite`` activated.
+   Make sure you allow the ``.htaccess`` file and have ``mod_rewrite`` activated.
+5. Add DNS entries for ``_avatars._tcp`` and ``_avatars-sec._tcp``.
+   A bind config file excerpt would look like this::
+
+    _avatars._tcp.example.org.     IN SRV 0 0 80  avatars.example.org
+    _avatars-sec._tcp.example.org. IN SRV 0 0 443 avatars.example.org
+
+   This makes the avatar server ``avatars.example.org`` responsible for
+   the domain ``example.org``, on ports 80 (HTTP) and 443 (HTTPS).
+
+It is possible to use an existing domain as avatar server.
+Just copy ``avatar.php`` into its document root dir and copy the rewrite rule
+from ``.htaccess`` into the domain's ``.htaccess`` file if one exists.
+If not, copy the whole ``.htaccess`` file.
+After that, you have to point the ``$cfgFile`` path at the beginning of
+the ``avatar.php`` file to the correct location.
 
 
 =====
