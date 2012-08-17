@@ -1,10 +1,46 @@
 <?php
+/**
+ * Directory where you source image files live
+ */
 $rawDir = __DIR__ . '/../raw/';
-$resDir = __DIR__ . '/../res/';
+
+/**
+ * Directory in which all the image files get generated into.
+ * You could put that to /var/cached/avatars/ or so
+ */
 $varDir = __DIR__ . '/../var/';
+
+/**
+ * Document root of the web server host.
+ */
 $wwwDir = __DIR__ . '/../www/';
+
+/**
+ * Directory of default resource files.
+ * You probably do not want to change that.
+ */
+$resDir = __DIR__ . '/../res/';
+
+/**
+ * Array of image sizes to generate.
+ * Needs to be in ascending order.
+ */
 $sizes   = array(16, 32, 48, 64, 80, 96, 128, 256, 512);
+
+/**
+ * Maximum image size supported by the server
+ */
 $maxSize = 512;
-$logLevel = 1;//0 - nothing, 3 - high
+
+/**
+ * Default log level. 0 for no logging, 1 for important messages, 3 for all
+ */
+$logLevel = 1;
+
+/**
+ * By default, images are only generated if their source file (in raw/)
+ * is newer than the generated square file. If you set $forceUpdate
+ * to true, the images will always be regenerated.
+ */
 $forceUpdate = false;
 ?>
