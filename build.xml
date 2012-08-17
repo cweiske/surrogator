@@ -18,7 +18,9 @@
 
   <fileset id="fs.zip" dir=".">
    <include name="data/surrogator.config.php.dist"/>
+   <include name="raw/.keep"/>
    <include name="res/**"/>
+   <include name="www/.htaccess"/>
    <include name="www/avatar.php"/>
    <include name="surrogator.php"/>
    <include name="ChangeLog"/>
