@@ -4,6 +4,15 @@ Surrogator
 
 Simple open source Libravatar__ compatible avatar image server written in PHP.
 
+Features:
+
+- Delivers images for email addresses
+- Very easy to setup.
+- No graphics processing is done on the server, keeping the CPU load low.
+  All avatar images get pre-generated for a set of sizes
+- If no image at the user requested size is found, the next larger image gets
+  returned.
+
 __ http://wiki.libravatar.org/api/
 
 
@@ -48,6 +57,19 @@ Usage
 4. When you run ``surrogator.php`` again, it will only generate small files
    when the raw file is newer than the "square" file in the var folder.
    You can force the update with ``--force``.
+
+
+====
+Test
+====
+
+To check if everything is setup correctly, try the following tools:
+
+- `Libravatar domain check tool`__ for DNS resolution tests
+- `Libravatar server check tool`__ for image resolving tests
+
+__ https://www.libravatar.org/tools/check_domain
+__ https://www.libravatar.org/tools/check
 
 
 =======
