@@ -5,3 +5,5 @@ README.html
 www/index.html
 www/favicon.ico
 www/robots.txt
+build.properties
+dist/

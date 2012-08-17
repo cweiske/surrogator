@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="surrogator" default="zip" basedir=".">
+  <!--
+    surrogator phing build file.
+    This script should provide a one-stop tool for all administrative
+    tasks around surrogator, like creating a release version,
+    tagging a release
+  -->
+  <property file="build.properties" />
+
+  <property name="version-m"  value="0.1" />
+  <property name="version"    value="0.1.0" />
+  <property name="stability"  value="alpha" />
+  <property name="zipfile"     value="${phing.project.name}-${version}.tar.bz2" />
+  <property name="distfile"    value="dist/${zipfile}" />
+  <property name="sfproject"   value="surrogator" />
+  <property name="sffilepath"  value="s/su/surrogator/" />
+
+  <fileset id="fs.zip" dir=".">
+   <include name="data/surrogator.config.php.dist"/>
+   <include name="res/**"/>
+   <include name="www/avatar.php"/>
+   <include name="surrogator.php"/>
+   <include name="ChangeLog"/>
+   <include name="LICENSE"/>
+   <include name="README.rst"/>
+   <exclude name="**/.gitignore"/>
+  </fileset>
+
+  <target name="zip" depends="check"
+   description="Create zip file for release"
+   >
+    <!--
+      The release file is for end users, so it is safe to
+      remove anything developer-related.
+
+      Test your bz2 with: tar -jtvf surrogator-0.1.0.tar.bz2
+    -->
+    <echo msg="Creating distribution zip for ${phing.project.name} ${version}"/>
+    <delete file="${distfile}" failonerror="false"/>
+    <tar compression="bzip2" destfile="${distfile}"
+         prefix="${phing.project.name}-${version}/"
+    >
+     <fileset refid="fs.zip"/>
+    </tar>
+  </target>
+
+
+  <target name="release" depends="check,zip,deploy-sf"
+   description="Release the version on sourceforge"
+   >
+   <!-- meta-target -->
+  </target>
+
+
+  <!--
+  /home/frs/project/s/su/surrogator/v0.1/
+  /home/frs/project/s/su/surrogator/v0.1/surrogator-v0.1.0.zip
+  /home/frs/project/s/su/surrogator/v0.1/surrogator-v0.1.1.zip
+  https://sourceforge.net/apps/trac/sourceforge/wiki/Release%20files%20for%20download
+  -->
+  <target name="deploy-sf" depends="check,zip"
+   description="Upload release to sourceforge"
+   >
+    <delete dir="dist/deploy-sf" /><!-- make empty -->
+    <mkdir dir="dist/deploy-sf" />
+    <mkdir dir="dist/deploy-sf/v${version-m}" />
+    <copy file="${distfile}" tofile="dist/deploy-sf/v${version-m}/${zipfile}"/>
+    <!-- test
+    <exec command="rsync -av dist/deploy-sf/ /tmp/test/" escape="false" />
+    -->
+    <exec
+     command="rsync -av -e ssh dist/deploy-sf/ ${sfuser},${sfproject}@frs.sourceforge.net:/home/frs/project/${sffilepath}/"
+     escape="false" checkreturn="false"
+     />
+    <!-- rsync always returns code 23 on sourceforge releases, so we
+         can't check return values -->
+  </target>
+
+
+  <target name="check"
+   description="Check variables"
+   >
+    <fail unless="version" message="Version not defined!" />
+    <fail unless="sfuser" message="Sourceforge username not defined!" />
+    <fail unless="sfproject" message="Sourceforge project name not defined!" />
+    <fail unless="sffilepath" message="Sourceforge project file path not defined!" />
+
+    <mkdir dir="dist" />
+  </target>
+
+</project>
