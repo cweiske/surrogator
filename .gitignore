@@ -3,3 +3,5 @@ raw/*
 data/surrogator.config.php
 README.html
 www/index.html
+www/favicon.ico
+www/robots.txt

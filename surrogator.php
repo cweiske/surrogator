@@ -118,13 +118,14 @@ foreach ($sizes as $size) {
 foreach (array('mm.png', 'default.png') as $resFile) {
     if (!file_exists($rawDir . '/' . $resFile)) {
         log($resFile . ' missing, copying it from res/', 2);
-        copy(__DIR__ . '/res/' . $resFile, $rawDir . '/' . $resFile);
+        copy($resDir . '/' . $resFile, $rawDir . '/' . $resFile);
     }
 }
-
-if (!file_exists($wwwDir . '/index.html') && is_writable($wwwDir)) {
-    log('no index.html found, copying default over', 1);
-    copy($wwwDir . '/index.surrogator.html', $wwwDir . '/index.html');
+foreach (array('index.html', 'robots.txt', 'favicon.ico') as $resFile) {
+    if (!file_exists($wwwDir . '/' . $resFile) && is_writable($wwwDir)) {
+        log('no www/' . $resFile . ' found, copying default over', 1);
+        copy($resDir . '/www/' . $resFile, $wwwDir . '/' . $resFile);
+    }
 }
 
 if (count($files)) {

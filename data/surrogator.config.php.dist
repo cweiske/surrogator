@@ -1,5 +1,6 @@
 <?php
 $rawDir = __DIR__ . '/../raw/';
+$resDir = __DIR__ . '/../res/';
 $varDir = __DIR__ . '/../var/';
 $wwwDir = __DIR__ . '/../www/';
 $sizes   = array(16, 32, 48, 64, 80, 96, 128, 256, 512);
