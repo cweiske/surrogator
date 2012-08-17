@@ -122,6 +122,11 @@ foreach (array('mm.png', 'default.png') as $resFile) {
     }
 }
 
+if (!file_exists($wwwDir . '/index.html') && is_writable($wwwDir)) {
+    log('no index.html found, copying default over', 1);
+    copy($wwwDir . '/index.surrogator.html', $wwwDir . '/index.html');
+}
+
 if (count($files)) {
     $fileInfos = array();
     foreach ($files as $file) {
