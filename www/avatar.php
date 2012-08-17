@@ -83,8 +83,11 @@ if (isset($_GET['default'])) {
         if ($_GET['default'] == '404') {
             $defaultMode = '404';
             $default     = '404';
+        } else if ($_GET['default'] == 'mm') {
+            //mystery man fallback image
+            $defaultMode = 'local';
+            $default     = 'mm.png';
         } else {
-            //FIXME: support mm
             //local default image
             $defaultMode = 'local';
             $default     = 'default.png';
