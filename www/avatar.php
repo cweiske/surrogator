@@ -10,7 +10,7 @@
  * @package  Surrogator
  * @author   Christian Weiske <cweiske@cweiske.de>
  * @license  http://www.gnu.org/licenses/agpl.html AGPLv3 or later
- * @link     http://git.cweiske.de/?p=surrogator.git
+ * @link     https://sourceforge.net/p/surrogator/
  */
 namespace surrogator;
 $cfgFile = __DIR__ . '/../data/surrogator.config.php';
