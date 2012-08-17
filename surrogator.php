@@ -115,6 +115,10 @@ foreach ($sizes as $size) {
         mkdir($varDir . '/' . $size, 0755);
     }
 }
+if (!file_exists($rawDir . '/mm.png')) {
+    log('mm.png missing, copying it from res/', 2);
+    copy(__DIR__ . '/res/mm.png', $rawDir . '/mm.png');
+}
 
 if (count($files)) {
     $fileInfos = array();
@@ -146,6 +150,8 @@ foreach ($fileInfos as $fileInfo) {
 
     if ($fileName == 'default.png') {
         $md5 = $sha256 = 'default';
+    } else if ($fileName == 'mm.png') {
+        $md5 = $sha256 = 'mm';
     } else {
         list($md5, $sha256) = getHashes($fileName);
     }
