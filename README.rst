@@ -14,8 +14,11 @@ Features:
   returned.
 - Supports the ``mm`` fallback image (mystery man)
 
-__ http://wiki.libravatar.org/api/
+__ https://www.libravatar.org/
 
+Homepage: `sf.net/p/surrogator`__
+
+__ https://sourceforge.net/p/surrogator/
 
 =====
 Setup
@@ -24,7 +27,7 @@ Setup
 1. Copy ``data/surrogator.config.php.dist`` to ``data/surrogator.config.php``
    (remove the ``.dist``)
 2. Adjust the config file to your needs
-3. Create a default image and put it into the raw folder, name it ``default.png``
+3. (optional) Create a default image and put it into the raw folder, name it ``default.png``
 4. Setup your web server and set the document root to the ``www/`` directory.
    Make sure you allow the ``.htaccess`` file and have ``mod_rewrite`` activated.
 5. Add DNS entries for ``_avatars._tcp`` and ``_avatars-sec._tcp``.
