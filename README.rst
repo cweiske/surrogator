@@ -12,6 +12,7 @@ Features:
   All avatar images get pre-generated for a set of sizes
 - If no image at the user requested size is found, the next larger image gets
   returned.
+- Supports the ``mm`` fallback image (mystery man)
 
 __ http://wiki.libravatar.org/api/
 
@@ -70,6 +71,12 @@ To check if everything is setup correctly, try the following tools:
 
 __ https://www.libravatar.org/tools/check_domain
 __ https://www.libravatar.org/tools/check
+
+See the libravatar wiki about `running a custom server`__ and
+the `API specification`__ for more information.
+
+__ http://wiki.libravatar.org/running_your_own/
+__ http://wiki.libravatar.org/api/
 
 
 =======
