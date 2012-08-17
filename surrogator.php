@@ -115,9 +115,11 @@ foreach ($sizes as $size) {
         mkdir($varDir . '/' . $size, 0755);
     }
 }
-if (!file_exists($rawDir . '/mm.png')) {
-    log('mm.png missing, copying it from res/', 2);
-    copy(__DIR__ . '/res/mm.png', $rawDir . '/mm.png');
+foreach (array('mm.png', 'default.png') as $resFile) {
+    if (!file_exists($rawDir . '/' . $resFile)) {
+        log($resFile . ' missing, copying it from res/', 2);
+        copy(__DIR__ . '/res/' . $resFile, $rawDir . '/' . $resFile);
+    }
 }
 
 if (count($files)) {
