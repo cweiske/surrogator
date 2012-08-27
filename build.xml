@@ -8,8 +8,8 @@
   -->
   <property file="build.properties" />
 
-  <property name="version-m"  value="0.1" />
-  <property name="version"    value="0.1.0" />
+  <property name="version-m"  value="0.2" />
+  <property name="version"    value="0.2.0" />
   <property name="stability"  value="alpha" />
   <property name="zipfile"     value="${phing.project.name}-${version}.tar.bz2" />
   <property name="distfile"    value="dist/${zipfile}" />

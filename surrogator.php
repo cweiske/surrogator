@@ -202,6 +202,9 @@ foreach ($fileInfos as $fileInfo) {
  */
 function getHashes($fileName)
 {
+    //OpenIDs have their slashes "/" url-encoded
+    $fileName = rawurldecode($fileName);
+
     $fileNameNoExt = substr($fileName, 0, -strlen(strrpos($fileName, '.')) - 2);
     $emailAddress  = trim(strtolower($fileNameNoExt));
 

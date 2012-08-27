@@ -6,7 +6,7 @@ Simple open source Libravatar__ compatible avatar image server written in PHP.
 
 Features:
 
-- Delivers images for email addresses
+- Delivers images for email addresses and OpenIDs
 - Very easy to setup.
 - No graphics processing is done on the server, keeping the CPU load low.
   All avatar images get pre-generated for a set of sizes
@@ -55,6 +55,12 @@ Usage
    Name has to be email address + image file extension, for example
    ``foo@example.org.png``.
    Surrogator supports ``.png`` and ``.jpg``.
+
+   For OpenIDs, use the url-encoded URL + extension as filename, for example
+   replace ``/`` with ``%2F``.
+   The filename for ``http://example.org/~foo`` would be
+   ``http:%2F%2Fexample.org%2F~foo.jpg``.
+
 2. Run ``php surrogator.php``.
    The small files get generated.
 3. You will get more information with ``-v``
