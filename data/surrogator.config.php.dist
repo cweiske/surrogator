@@ -43,4 +43,9 @@ $logLevel = 1;
  * to true, the images will always be regenerated.
  */
 $forceUpdate = false;
+
+/**
+ * By default, no symlinks are created.
+ */
+$useSymlinks = true;
 ?>
