@@ -34,6 +34,8 @@ foreach ($argv as $arg) {
         ++$logLevel;
     } else if ($arg == '-vv') {
         $logLevel += 2;
+    } else if ($arg == '-s' || $arg == '--symlink') {
+        $useSymlinks = true;
     } else if ($arg == '-q' || $arg == '--quiet') {
         $logLevel = 0;
     } else if ($arg == '-f' || $arg == '--force') {
@@ -71,10 +73,17 @@ Options:
  -v, --verbose  Be verbose (more log messages, also -vv)
  -q, --quiet    Be quiet (no log messages)
  -f, --force    Force update of all files
+ -s, --symlink  De-duplicate using symlinks. *
      --version  Show program version
 
 filenames       One or several files whose small images shall get generated.
                 If none given, all will be checked
+
+* a. Make the MD5 image sizes symlinks to the SHA256 image sizes.
+  b. If the raw image is a symlink which stays in the raw folder, re-use the sizes
+  generated for link target image by symlinking them. (The check if the target
+  lies within the raw folder is flawed: It just works on the strings, and does not
+  resolve ., .., ~ etc.)
 
 HLP;
 }
@@ -140,38 +149,85 @@ if (count($files)) {
     );
 }
 foreach ($fileInfos as $fileInfo) {
+
     $origPath   = $fileInfo->getPathname();
     $fileName   = $fileInfo->getFilename();
-    $ext        = strtolower(substr($fileName, strrpos($fileName, '.') + 1));
-    $squarePath = $varDir . '/square/'
-        . substr($fileName, 0, -strlen($ext)) . 'png';
+    $ext        = $fileInfo->getExtension();
 
-    log('processing ' . $fileName, 1);
-    if (imageUptodate($origPath, $squarePath)) {
-        log(' image up to date', 2);
+    $isSymlink  = false;
+
+    // Double store b/c will be overwritten if it's a symlink.
+    $targetName = $fileName;
+    $targetPath = $origPath;
+
+    if ($useSymlinks && is_link($origPath) && ($linkTarget = readlink($origPath))) {
+
+        $isSymlink = true;
+
+        //FIXME fail on absoulte links, links that do not point to current dir
+        $origPath = dirname($origPath) . '/' . $linkTarget;
+        $fileName = basename($linkTarget);
+    }
+
+    $fileNameOnly = basename($fileName, '.' . $ext);
+    $targetNameOnly = basename($targetName, '.' . $ext);
+
+    $readableName = rawurldecode($targetNameOnly);
+    $squarePath = getSquarePath($targetNameOnly);
+    $hashes = getHashes($targetName);
+
+    log('processing ' . $readableName .' ('. $targetName .')', 1);
+
+    log(' md5:    ' . $hashes[0], 3);
+    log(' sha256: ' . $hashes[1], 3);
+
+    if($isSymlink) {
+
+        if(is_link($squarePath)){
+            log(' square link exists, does not look like something is to do.', 2);
+            continue;
+        }
+
+        makeLink(getSquarePath($fileNameOnly), getSquarePath($targetNameOnly));
+
+        log(' using sizes of ' . $fileName . ' for ' . $targetName . '.', 2);
+
+        $srcHashes = getHashes($fileName);
+
+        foreach ($sizes as $size) {
+            log(' size ' . $size, 3);
+
+            $tgtSizes = getSizePaths($size, $hashes);
+            $srcSizes = getSizePaths($size, $srcHashes);
+
+            array_map('surrogator\makeLink', $srcSizes, $tgtSizes);
+        }
+
+        continue;
+
+    }
+
+    if (imageUptodate($targetPath, getSquarePath($targetNameOnly))) {
+
+        $tgtDir = basename(dirname($targetPath));
+        $sqrDir = basename(dirname($squarePath));
+
+        log(' image up to date ' . $tgtDir . ' <> '. $sqrDir, 2);
         continue;
     }
 
-    if (!createSquare($origPath, $ext, $squarePath, $maxSize)) {
+    if (!createSquare($targetPath, $ext, $squarePath, $maxSize)) {
+        log(' could not create square');
         continue;
     }
 
-    if ($fileName == 'default.png') {
-        $md5 = $sha256 = 'default';
-    } else if ($fileName == 'mm.png') {
-        $md5 = $sha256 = 'mm';
-    } else {
-        list($md5, $sha256) = getHashes($fileName);
-    }
 
     log(' creating sizes for ' . $fileName, 2);
-    log(' md5:    ' . $md5, 3);
-    log(' sha256: ' . $sha256, 3);
     $imgSquare = imagecreatefrompng($squarePath);
     foreach ($sizes as $size) {
         log(' size ' . $size, 3);
-        $sizePathMd5    = $varDir . '/' . $size . '/' . $md5 . '.png';
-        $sizePathSha256 = $varDir . '/' . $size . '/' . $sha256 . '.png';
+
+        list($sizePathMd5, $sizePathSha256) = getSizePaths($size, $hashes);
 
         $imgSize = imagecreatetruecolor($size, $size);
         imagealphablending($imgSize, false);
@@ -194,6 +250,53 @@ foreach ($fileInfos as $fileInfo) {
 }
 
 /**
+ * Get path to square image for a file name.
+ * @param string $fileName file name w/o extension (will always be .png).
+ * @return string
+ */
+function getSquarePath($fileName)
+{
+    // squares are size images with size "square" and hash "file name";
+    return getSizePaths("square", [$fileName])[0];
+}
+
+function makeLink($target, $link)
+{
+    global $forceUpdate;
+
+    // make link short, if possible
+    $target = dirname($target) == dirname($link) ? basename($target) : $target;
+
+    if(!$forceUpdate && is_link($link) && readlink($link) == $target) return;
+
+    if(is_file($link)) unlink($link);
+
+    symlink($target, $link);
+}
+
+/**
+ * Create and return image size paths form an array of hashes.
+ *
+ * @param array $hashes
+ * @param string $size the image size
+ *
+ * @return array the $hashes array mapped to size paths.
+ */
+function getSizePaths($size, $hashes)
+{
+    global $varDir;
+    $ret = [];
+
+    foreach($hashes as $hash)
+    {
+     $ret[] = sprintf('%s/%s/%s.png', chop($varDir, "/"), $size, $hash);
+    }
+
+    return $ret;
+
+}
+
+/**
  * Create and return md5 and sha256 hashes from a filename.
  *
  * @param string $fileName filename without path, e.g. "foo@example.org.png"
@@ -202,6 +305,10 @@ foreach ($fileInfos as $fileInfo) {
  */
 function getHashes($fileName)
 {
+    if (in_array($fileName, ['default.png', 'mm.png'])) {
+        return array_fill(0, 2, pathinfo($fileName, PATHINFO_FILENAME));
+    }
+
     //OpenIDs have their slashes "/" url-encoded
     $fileName = rawurldecode($fileName);
 
