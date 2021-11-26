@@ -54,7 +54,7 @@ Usage
 1. Put images in ``raw/`` folder.
    Name has to be email address + image file extension, for example
    ``foo@example.org.png``.
-   Surrogator supports ``.png`` and ``.jpg``.
+   Surrogator supports ``.png``, ``.jpg`` and ``svg`` files.
 
    For OpenIDs, use the url-encoded URL + extension as filename, for example
    replace ``/`` with ``%2F``.
@@ -67,6 +67,8 @@ Usage
 4. When you run ``surrogator.php`` again, it will only generate small files
    when the raw file is newer than the "square" file in the var folder.
    You can force the update with ``--force``.
+
+Note: PHP imagick extension is required for ``svg`` files.
 
 
 ====

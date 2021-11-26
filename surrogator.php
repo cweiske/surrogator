@@ -136,7 +136,7 @@ if (count($files)) {
 } else {
     $fileInfos = new \RegexIterator(
         new \DirectoryIterator($rawDir),
-        '#^.+\.(png|jpg)$#'
+        '#^.+\.(png|jpg|svg|svgz)$#'
     );
 }
 foreach ($fileInfos as $fileInfo) {
@@ -230,8 +230,15 @@ function createSquare($origPath, $ext, $targetPath, $maxSize)
         $imgOrig = imagecreatefrompng($origPath);
     } else if ($ext == 'jpg' || $ext == 'jpeg') {
         $imgOrig = imagecreatefromjpeg($origPath);
+    } else if ($ext == 'svg' || $ext == 'svgz') {
+        $imagickImg = new \Imagick();
+        $imagickImg->setBackgroundColor(new \ImagickPixel('transparent'));
+        $imagickImg->readImage($origPath);
+        $imagickImg->setImageFormat('png32');
+        $imgOrig = imagecreatefromstring($imagickImg->getImageBlob());
     } else {
         //unsupported format
+        logErr('Unsupported image format: ' . $origPath);
         return false;
     }
 
