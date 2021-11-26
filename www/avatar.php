@@ -96,7 +96,19 @@ if (isset($_GET['default'])) {
         //url
         $defaultMode = 'redirect';
         $default     = $_GET['default'];
-        //FIXME: validate?
+
+        $allowed = false;
+        foreach ($trustedDefaultUrls ?? [] as $urlPrefix) {
+            if (substr($default, 0, strlen($urlPrefix))  == $urlPrefix) {
+                $allowed = true;
+                break;
+            }
+        }
+        if (!$allowed) {
+            header('X-Info: default parameter URL not allowed');
+            $defaultMode = 'local';
+            $default     = 'default.png';
+        }
     }
 }
 

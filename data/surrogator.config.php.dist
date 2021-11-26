@@ -43,4 +43,20 @@ $logLevel = 1;
  * to true, the images will always be regenerated.
  */
 $forceUpdate = false;
+
+/**
+ * URL prefixes that may be used as "default" parameter.
+ *
+ * Taken from https://git.linux-kernel.at/oliver/ivatar/-/blob/master/config.py
+ */
+$trustedDefaultUrls = [
+    'http://gravatar.com/avatar/',
+    'http://www.planet-libre.org/themes/planetlibre/images/',
+    'https://avatars.dicebear.com/api/',
+    'https://badges.fedoraproject.org/static/img/',
+    'https://gravatar.com/avatar/',
+    'https://secure.gravatar.com/avatar/',
+    'https://ui-avatars.com/api/',
+    'https://www.azuracast.com/img/',
+];
 ?>

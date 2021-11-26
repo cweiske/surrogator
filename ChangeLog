@@ -1,3 +1,8 @@
+2021-11-26  Christian Weiske  <cweiske@cweiske.de>
+
+	* Fix open redirect security issue (CWE-601).
+	  You have to white-list allowed default URLs now.
+
 2012-08-27  Christian Weiske  <cweiske@bogo>
 
 	* Add support for OpenIDs
