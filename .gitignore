@@ -7,3 +7,4 @@ www/favicon.ico
 www/robots.txt
 build.properties
 dist/
+/vendor/

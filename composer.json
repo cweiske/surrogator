@@ -1,0 +1,9 @@
+{
+    "name": "cweiske/surrogator",
+    "description": "Libravatar compatible avatar image server",
+    "license": "AGPL-3.0-only",
+    "require": {
+        "ext-gd": "*",
+        "ext-imagick": "*"
+    }
+}
