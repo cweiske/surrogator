@@ -8,3 +8,4 @@ www/robots.txt
 build.properties
 dist/
 /vendor/
+/.idea/
