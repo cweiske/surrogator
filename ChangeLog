@@ -1,3 +1,8 @@
+2025-03-18  Christian Weiske  <cweiske@cweiske.de>
+
+	* Fix handling of short file names
+	* Version 0.3.1
+
 2021-11-26  Christian Weiske  <cweiske@cweiske.de>
 
 	* Fix open redirect security issue (CWE-601).
@@ -5,7 +10,7 @@
 	* Add support for .svg source files
 	* Version 0.3.0
 
-2012-08-27  Christian Weiske  <cweiske@bogo>
+2012-08-27  Christian Weiske  <cweiske@cweiske.de>
 
 	* Add support for OpenIDs
 	* Version 0.2.0
